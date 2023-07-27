@@ -2,7 +2,7 @@ name: Docker Image CI
 env:
   DOCKER_PROJECT: emscripten_sdl2_framework
   DOCKER_IMAGE_NAME: emscripten_sdl2_framework:latest
-  DOCKER_RUN_COMMAND: docker run --rm -i -v ${{ github.workspace }}:/home/SolarHeater ${{ secrets.DOCKER_HUB_USERNAME }}/emscripten_sdl2_framework:latest bash -c
+  DOCKER_RUN_COMMAND: docker run --rm -i -v ${{ github.workspace }}:/home/SolarHeater xiang19890319/emscripten_sdl2_framework:latest bash -c
 on:
   push:
     branches: [ "main" ]
