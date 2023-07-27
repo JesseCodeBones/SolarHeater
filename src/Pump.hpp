@@ -19,7 +19,7 @@ public:
   Pump &operator=(Pump &&rhs) = delete;
 
   void turnOn() noexcept {
-    
+
     if (!switch_ && this->storageTank_.getTemperature() < 100.0) {
       switch_ = true;
       auto runFun = [this]() {

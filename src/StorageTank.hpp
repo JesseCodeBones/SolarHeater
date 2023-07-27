@@ -63,7 +63,7 @@ public:
   void receiveHeat(const uint32_t heat) noexcept {
 
     // fixme -1 degree to 1 degree
-    // fix me consider Enthalpy of fusion 
+    // fix me consider Enthalpy of fusion
 
     temperature_ += (heat /
                      static_cast<float>(this->temperature_ < 0 ? IceSpecificHeatCapacity

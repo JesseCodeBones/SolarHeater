@@ -2,9 +2,9 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
 #include <thread>
-#include "../src/StorageTank.hpp"
-#include "../src/SolarPanel.hpp"
 #include "../src/Pump.hpp"
+#include "../src/SolarPanel.hpp"
+#include "../src/StorageTank.hpp"
 TEST(StorageTank, empty_with_temperature) {
   StorageTank tank1(0U, 100);
   ASSERT_EQ(tank1.getTemperature(), 0.0);
@@ -46,7 +46,7 @@ TEST(StorageTank, add_water) {
 
 TEST(StorageTank, boiled) {
   StorageTank tank(1U, 99);
-  tank.receiveHeat(4200U*2U);
+  tank.receiveHeat(4200U * 2U);
   ASSERT_EQ(tank.getTemperature(), 100);
 }
 

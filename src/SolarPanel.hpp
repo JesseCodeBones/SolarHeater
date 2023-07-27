@@ -21,7 +21,7 @@ public:
   /// @brief set heat every second
   ///
   /// @param newHeat new heat per second
-  void setHeatPerSecond(const uint32_t newHeat)noexcept{
+  void setHeatPerSecond(const uint32_t newHeat) noexcept {
     this->heat_ = newHeat;
   }
 
