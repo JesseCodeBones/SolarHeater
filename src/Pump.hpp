@@ -4,7 +4,7 @@
 #include <thread>
 #include "SolarPanel.hpp"
 #include "StorageTank.hpp"
-class Pump {
+class Pump final{
 public:
   ///
   /// @brief create a pump
@@ -28,7 +28,7 @@ public:
   void turnOn() noexcept {
     if (!switch_ && this->storageTank_.getTemperature() < 100.0) {
       switch_ = true;
-      auto runFun = [this]() {
+      auto runFun = [this]() noexcept(true) {
         while (this->switch_) {
           this->storageTank_.receiveHeat(this->solarPanel_.getHeat());
           std::cout << "storage tank info: volume(kg) = " << this->storageTank_.getVolume()
@@ -48,8 +48,8 @@ public:
   }
 
   ///< @brief turn off the pump
-  void turnOff() {
-    auto turnOffFun = [this]() {
+  void turnOff() noexcept {
+    auto turnOffFun = [this]() noexcept(true) {
       this->switch_ = false;
     };
     std::thread thread{turnOffFun};

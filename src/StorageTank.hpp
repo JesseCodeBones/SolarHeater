@@ -43,17 +43,17 @@ public:
   }
 
   /// @brief get current temperature
-  float getTemperature() const {
+  float getTemperature() const noexcept {
     return this->temperature_;
   }
 
   /// @brief get current ice volume
-  float getIce() const {
+  float getIce() const noexcept {
     return this->ice_;
   }
 
   /// @brief get current  volume
-  float getVolume() const {
+  float getVolume() const noexcept {
     return this->volume_;
   }
 
