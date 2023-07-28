@@ -28,7 +28,7 @@ public:
     if (temperature_ < AbsoluteZero) {
       throw std::runtime_error("water temperature cannot below absolute zero(-273) degree");
     }
-    if (volume > maxVolume_) {
+    if (volume > static_cast<float>(maxVolume_)) {
       throw std::runtime_error("cannot add water more than the max volume of the tank");
     }
     if (iceVolume != 0 && temperature > 0) {
@@ -61,29 +61,29 @@ public:
   /// @brief receive heat from outside, change the temperature, the water could be boiled
   ///
   /// @param heat heat from outside
-  void receiveHeat(uint32_t heat) noexcept {
-
-    while (heat > 0) {
+  void receiveHeat(const uint32_t heat) noexcept {
+    float availableHeat = static_cast<float>(heat);
+    while (availableHeat > 0) {
       if (temperature_ < 0) {
         float toZeroHeat = IceSpecificHeatCapacity * volume_ * (-temperature_);
-        if (heat > toZeroHeat) {
-          heat -= toZeroHeat;
+        if (availableHeat > toZeroHeat) {
+          availableHeat -= toZeroHeat;
           temperature_ = 0;
         } else {
-          temperature_ += heat / (static_cast<float>(IceSpecificHeatCapacity) * volume_);
-          heat = 0;
+          temperature_ += availableHeat / (static_cast<float>(IceSpecificHeatCapacity) * volume_);
+          availableHeat = 0;
         }
         continue;
       }
       if (temperature_ == 0) {
         if (ice_ > 0) {
-          const uint32_t iceFusionHeat = ice_ * EnthalpyOfFusion;
-          if (iceFusionHeat > heat) {
-            ice_ = ice_ - static_cast<float>(heat) / EnthalpyOfFusion;
-            heat = 0;
+          const float iceFusionHeat = ice_ * EnthalpyOfFusion;
+          if (iceFusionHeat > availableHeat) {
+            ice_ = ice_ - static_cast<float>(availableHeat) / EnthalpyOfFusion;
+            availableHeat = 0;
           } else {
             ice_ = 0;
-            heat -= iceFusionHeat;
+            availableHeat -= iceFusionHeat;
           }
           continue;
         }
@@ -91,9 +91,9 @@ public:
 
       if (ice_ == 0 && temperature_ >= 0) {
         float increaseTemperature =
-            ((heat / static_cast<float>(WaterSpecificHeatCapacity)) / volume_);
+            ((availableHeat / static_cast<float>(WaterSpecificHeatCapacity)) / volume_);
         temperature_ += increaseTemperature;
-        heat = 0;
+        availableHeat = 0;
         continue;
       }
     }
@@ -108,6 +108,7 @@ public:
   StorageTank(StorageTank &&src) = delete;
   StorageTank &operator=(const StorageTank &rhs) = delete;
   StorageTank &operator=(StorageTank &&rhs) = delete;
+  ~StorageTank() = default;
 
 private:
   float volume_;              ///< current volume

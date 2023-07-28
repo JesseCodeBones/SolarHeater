@@ -32,7 +32,7 @@ TEST(StorageTank, create_overflow) {
 }
 
 TEST(StorageTank, create_lower_than_absolute_zero) {
-  ASSERT_THROW(StorageTank tank(1000U, AbsoluteZero-1);, std::runtime_error);
+  ASSERT_THROW(StorageTank tank(1000U, AbsoluteZero - 1);, std::runtime_error);
 }
 
 TEST(StorageTank, heat_one_degree) {
@@ -53,7 +53,6 @@ TEST(StorageTank, invalid_temperature) {
   ASSERT_ANY_THROW(StorageTank tank(1U, 199));
 }
 
-
 TEST(StorageTank, fusion_ice) {
   StorageTank tank(2U, 0, 1U);
   tank.receiveHeat(EnthalpyOfFusion);
@@ -68,7 +67,7 @@ TEST(StorageTank, fusion_ice) {
   ASSERT_EQ(tank2.getVolume(), 3U);
 
   StorageTank tank3(2U, 0, 1U);
-  tank3.receiveHeat(EnthalpyOfFusion + 2*WaterSpecificHeatCapacity);
+  tank3.receiveHeat(EnthalpyOfFusion + 2 * WaterSpecificHeatCapacity);
   ASSERT_EQ(tank3.getTemperature(), 1.0);
   ASSERT_EQ(tank3.getIce(), 0U);
   ASSERT_EQ(tank3.getVolume(), 2U);
@@ -80,19 +79,19 @@ TEST(StorageTank, fusion_ice) {
   ASSERT_EQ(tank4.getVolume(), 1U);
 
   StorageTank tank5(3U, 0, 2U);
-  tank5.receiveHeat(EnthalpyOfFusion );
+  tank5.receiveHeat(EnthalpyOfFusion);
   ASSERT_EQ(tank5.getTemperature(), 0.0);
   ASSERT_EQ(tank5.getIce(), 1U);
   ASSERT_EQ(tank5.getVolume(), 3U);
 
   StorageTank tank6(1U, -2, 1U);
-  tank6.receiveHeat(IceSpecificHeatCapacity );
+  tank6.receiveHeat(IceSpecificHeatCapacity);
   ASSERT_EQ(tank6.getTemperature(), -1.0);
   ASSERT_EQ(tank6.getIce(), 1U);
   ASSERT_EQ(tank6.getVolume(), 1U);
 
   StorageTank tank7(0.5, -2, 0.5);
-  tank7.receiveHeat(EnthalpyOfFusion/2 +  IceSpecificHeatCapacity + WaterSpecificHeatCapacity);
+  tank7.receiveHeat(EnthalpyOfFusion / 2 + IceSpecificHeatCapacity + WaterSpecificHeatCapacity);
   ASSERT_EQ(tank7.getTemperature(), 2.0);
   ASSERT_EQ(tank7.getIce(), 0U);
   ASSERT_EQ(tank7.getVolume(), 0.5);

@@ -3,7 +3,6 @@ project(solar_heater VERSION 0.1.0 LANGUAGES C CXX)
 
 include(CTest)
 enable_testing()
-find_package(SDL2 REQUIRED)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src sources)
 set(CMAKE_CXX_STANDARD 17)
 if(ENABLE_CLANG_TIDY)

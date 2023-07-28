@@ -22,6 +22,7 @@ public:
   Pump(Pump &&src) = delete;
   Pump &operator=(const Pump &rhs) = delete;
   Pump &operator=(Pump &&rhs) = delete;
+  ~Pump() = default;
 
   ///< @brief turn on the pump, get heat from solar panel, and provide it to storage tank
   void turnOn() noexcept {

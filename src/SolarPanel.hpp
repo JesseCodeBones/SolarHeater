@@ -29,7 +29,7 @@ public:
   /// @brief provide heat every second
   ///
   /// @param heat heat energy per second
-  SolarPanel(uint32_t heat) noexcept : heat_(heat) {
+  explicit SolarPanel(uint32_t heat) noexcept : heat_(heat) {
   }
 
   // no move and no copy, every system want to use heater, create one by itself
@@ -37,6 +37,7 @@ public:
   SolarPanel(SolarPanel &&src) = delete;
   SolarPanel &operator=(const SolarPanel &rhs) = delete;
   SolarPanel &operator=(SolarPanel &&rhs) = delete;
+  ~SolarPanel() = default;
 
 private:
   uint32_t heat_; ///< heat energy per second
