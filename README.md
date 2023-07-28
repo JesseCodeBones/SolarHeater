@@ -4,6 +4,8 @@
 ### install gtest
 ```bash
 apt-get clean && apt-get update -y && apt-get install wget libgtest-dev python3 ninja-build gcovr  clang-tidy clang-format curl cmake build-essential nodejs npm -y --no-install-recommends
+```
+```bash
 cd /usr/src/gtest && cmake CMakeLists.txt && make && cd ./lib && cp *.a /usr/lib && ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
 ```
 ### build and execute
