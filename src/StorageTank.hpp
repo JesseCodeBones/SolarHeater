@@ -6,17 +6,19 @@
 #include <thread>
 const uint32_t WaterSpecificHeatCapacity = 4200U;
 const uint32_t IceSpecificHeatCapacity = 2090U;
+const uint32_t EnthalpyOfFusion = 334'000U;
 const float AbsoluteZero = -273;
 /// @brief water storage tank
-class StorageTank {
+class StorageTank final {
 public:
   ///
   /// @brief create a water storage tank
   ///
-  /// @param volume init water volume
+  /// @param volume total init water and ice volume
   /// @param temperature init water temperature
-  explicit StorageTank(const uint32_t volume, const float temperature)
-      : volume_(volume), temperature_(temperature) {
+  /// @param iceVolume ice volume
+  explicit StorageTank(const float volume, const float temperature, const float iceVolume = 0U)
+      : volume_(volume), temperature_(temperature), ice_(iceVolume) {
     if (volume == 0) {
       temperature_ = 0.0;
     }
@@ -29,6 +31,15 @@ public:
     if (volume > maxVolume_) {
       throw std::runtime_error("cannot add water more than the max volume of the tank");
     }
+    if (iceVolume != 0 && temperature > 0) {
+      throw std::runtime_error("cannot init water storage tank with ice and temperature > 0");
+    }
+    if (iceVolume > volume) {
+      throw std::runtime_error("ice volume cannot greater than total volume");
+    }
+    if (temperature < 0 && iceVolume != volume) {
+      throw std::runtime_error("temperature < 0, then ice volume shoule be total volume");
+    }
   }
 
   /// @brief get current temperature
@@ -36,40 +47,57 @@ public:
     return this->temperature_;
   }
 
-  ///
-  /// @brief add water to this tank
-  ///
-  /// @param volume water volume
-  /// @param temperature water temperature
-  void addWater(const uint32_t volume, const float temperature) {
-    if (volume + volume_ > maxVolume_) {
-      throw std::runtime_error("cannot add water more than the max volume of the tank");
-    }
-    if (temperature < AbsoluteZero) {
-      throw std::runtime_error("water temperature cannot below absolute zero(-273) degree");
-    }
-    if (temperature > 100.0) {
-      throw std::runtime_error("water temperature cannot above 100 degree");
-    }
-    temperature_ = ((volume * temperature) + (volume_ * temperature_)) / (volume_ + volume);
-    volume_ += volume;
+  /// @brief get current ice volume
+  float getIce() const {
+    return this->ice_;
+  }
+
+  /// @brief get current  volume
+  float getVolume() const {
+    return this->volume_;
   }
 
   ///
   /// @brief receive heat from outside, change the temperature, the water could be boiled
   ///
-  /// @param volume water volume
-  /// @param temperature water temperature
-  void receiveHeat(const uint32_t heat) noexcept {
+  /// @param heat heat from outside
+  void receiveHeat(uint32_t heat) noexcept {
 
-    // fixme -1 degree to 1 degree
-    // fix me consider Enthalpy of fusion
+    while (heat > 0) {
+      if (temperature_ < 0) {
+        float toZeroHeat = IceSpecificHeatCapacity * volume_ * (-temperature_);
+        if (heat > toZeroHeat) {
+          heat -= toZeroHeat;
+          temperature_ = 0;
+        } else {
+          temperature_ += heat / (static_cast<float>(IceSpecificHeatCapacity) * volume_);
+          heat = 0;
+        }
+        continue;
+      }
+      if (temperature_ == 0) {
+        if (ice_ > 0) {
+          const uint32_t iceFusionHeat = ice_ * EnthalpyOfFusion;
+          if (iceFusionHeat > heat) {
+            ice_ = ice_ - static_cast<float>(heat) / EnthalpyOfFusion;
+            heat = 0;
+          } else {
+            ice_ = 0;
+            heat -= iceFusionHeat;
+          }
+          continue;
+        }
+      }
 
-    temperature_ += (heat /
-                     static_cast<float>(this->temperature_ < 0 ? IceSpecificHeatCapacity
-                                                               : WaterSpecificHeatCapacity) /
-                     volume_);
-    if (temperature_ >= 100U) {
+      if (ice_ == 0 && temperature_ >= 0) {
+        float increaseTemperature =
+            ((heat / static_cast<float>(WaterSpecificHeatCapacity)) / volume_);
+        temperature_ += increaseTemperature;
+        heat = 0;
+        continue;
+      }
+    }
+    if (temperature_ >= 100.0) {
       std::cout << "warning message: the water is boiled\n";
       temperature_ = 100.0;
     }
@@ -82,8 +110,9 @@ public:
   StorageTank &operator=(StorageTank &&rhs) = delete;
 
 private:
-  uint32_t volume_;          ///< current volume
-  float temperature_;        ///< current temperature
-  uint32_t maxVolume_ = 100; ///< max volume is 100 kg
+  float volume_;              ///< current volume
+  float temperature_;         ///< current temperature
+  uint32_t maxVolume_ = 100U; ///< max volume is 100 kg
+  float ice_ = 0U;            ///< ice volume in this tank
 };
 #endif

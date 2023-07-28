@@ -6,6 +6,11 @@
 #include "StorageTank.hpp"
 class Pump {
 public:
+  ///
+  /// @brief create a pump
+  ///
+  /// @param solarPanel provide heat
+  /// @param storageTank receive heat
   Pump(SolarPanel &solarPanel, StorageTank &storageTank) noexcept
       : solarPanel_(solarPanel), storageTank_(storageTank) {
   }
@@ -18,28 +23,31 @@ public:
   Pump &operator=(const Pump &rhs) = delete;
   Pump &operator=(Pump &&rhs) = delete;
 
+  ///< @brief turn on the pump, get heat from solar panel, and provide it to storage tank
   void turnOn() noexcept {
-
     if (!switch_ && this->storageTank_.getTemperature() < 100.0) {
       switch_ = true;
       auto runFun = [this]() {
         while (this->switch_) {
           this->storageTank_.receiveHeat(this->solarPanel_.getHeat());
-          std::cout << "new temperature is :" << this->storageTank_.getTemperature() << std::endl;
+          std::cout << "storage tank info: volume(kg) = " << this->storageTank_.getVolume()
+                    << ", temperature(°C) = " << this->storageTank_.getTemperature()
+                    << ", ice volume(kg) = " << this->storageTank_.getIce() << std::endl;
           if (this->storageTank_.getTemperature() == 100.0) {
             this->switch_ = false;
             std::cout << "the water is boiled, stop the pump\n";
             break;
           }
         }
+        std::this_thread::yield();
       };
       std::thread thread{runFun};
       thread.detach();
     }
   }
 
+  ///< @brief turn off the pump
   void turnOff() {
-
     auto turnOffFun = [this]() {
       this->switch_ = false;
     };
@@ -48,9 +56,9 @@ public:
   }
 
 private:
-  SolarPanel &solarPanel_;   ///< solar panel provide heat
-  StorageTank &storageTank_; ///< storage tank for water storage
-  bool switch_ = false;
-  std::unique_ptr<std::thread> currentRunningThread;
+  SolarPanel &solarPanel_;                           ///< solar panel provide heat
+  StorageTank &storageTank_;                         ///< storage tank for water storage
+  bool switch_ = false;                              ///< virtual switch
+  std::unique_ptr<std::thread> currentRunningThread; ///< pump thread
 };
 #endif
