@@ -6,7 +6,7 @@
 ///
 /// @brief solar heat provider
 ///
-class SolarPanel final{
+class SolarPanel final {
 public:
   ///
   /// @brief provide heat every second

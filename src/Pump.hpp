@@ -4,7 +4,7 @@
 #include <thread>
 #include "SolarPanel.hpp"
 #include "StorageTank.hpp"
-class Pump final{
+class Pump final {
 public:
   ///
   /// @brief create a pump
