@@ -32,7 +32,7 @@ TEST(StorageTank, create_overflow) {
 }
 
 TEST(StorageTank, create_lower_than_absolute_zero) {
-  ASSERT_THROW(StorageTank tank(1000U, AbsoluteZero - 1);, std::runtime_error);
+  ASSERT_THROW(StorageTank tank(10U, AbsoluteZero - 1, 10U);, std::runtime_error);
 }
 
 TEST(StorageTank, heat_one_degree) {
